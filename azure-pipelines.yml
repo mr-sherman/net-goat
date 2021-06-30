@@ -22,16 +22,17 @@ steps:
     targetType: inline
     script: |     
       Write-Host "DOWNLOADING CODEQL WINDOWS BUNDLE"
-      cd $(Agent.WorkFolder)
-      Invoke-WebRequest -uri https://github.com/github/codeql-action/releases/latest/download/codeql-bundle-win64.tar.gz -OutFile $(Agent.WorkFolder)\codeql-bundle-win64.tar.gz
-      tar zxf ./codeql-bundle-win64.tar.gz
+      mkdir codeql
+      cd codeql
+      wget "https://github.com/github/codeql-action/releases/download/codeql-bundle-20210421/codeql-bundle-win64.tar.gz" -outfile "codeql-bundle-win64.tar.gz"
+      tar zxf .\codeql-bundle-win64.tar.gz codeql
 - task: PowerShell@2
   displayName: CodeQL Initialisation
   inputs:
     targetType: inline
     script: |
       Write-Host "CREATING CODEQL DATABASE"    
-      & $(Agent.WorkFolder)\codeql\codeql database create $(Agent.WorkFolder)\codeql-database --language=csharp 
+      & codeql\codeql\codeql database create $(Agent.WorkFolder)\codeql-database --language=csharp 
       #--command=
       #dotnet restore **/*.sln
       #dotnet build **/something.csproj --configuration $(BuildConfiguration) --no-restore
@@ -45,4 +46,4 @@ steps:
       New-Item -ItemType "directory" -Path $(Agent.WorkFolder)\codeql-sarif
       New-Item -ItemType "directory" -Path $(Agent.WorkFolder)\codeql-sarif\code-scanning-alerts.sarif
     
-      & $(Agent.WorkFolder)\codeql\codeql database analyze $(Agent.WorkFolder)\codeql-database $(Agent.WorkFolder)\codeql\qlpacks\codeql-csharp\codeql-suites\csharp-code-scanning.qls --format=sarif-latest --output=$(Agent.WorkFolder)\codeql-sarif\code-scanning-alerts.sarif
+      & codeql\codeql\codeql database analyze $(Agent.WorkFolder)\codeql-database $(Agent.WorkFolder)\codeql\qlpacks\codeql-csharp\codeql-suites\csharp-code-scanning.qls --format=sarif-latest --output=$(Agent.WorkFolder)\codeql-sarif\code-scanning-alerts.sarif
