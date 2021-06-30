@@ -36,3 +36,13 @@ steps:
       #dotnet restore **/*.sln
       #dotnet build **/something.csproj --configuration $(BuildConfiguration) --no-restore
 
+- task: PowerShell@2
+  displayName: CodeQL Analysis
+  inputs:
+    targetType: inline
+    script: |
+      Write-host "PERFORMING CODEQL ANALYSIS"
+      New-Item -ItemType "directory" -Path $(Agent.WorkFolder)\codeql-sarif
+      New-Item -ItemType "directory" -Path $(Agent.WorkFolder)\codeql-sarif\code-scanning-alerts.sarif
+    
+      & $(Agent.WorkFolder)\codeql\codeql database analyze $(Agent.WorkFolder)\codeql-database $(Agent.WorkFolder)\codeql\qlpacks\codeql-csharp\codeql-suites\csharp-code-scanning.qls --format=sarif-latest --output=$(Agent.WorkFolder)\codeql-sarif\code-scanning-alerts.sarif
