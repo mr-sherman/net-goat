@@ -24,7 +24,7 @@ steps:
       Write-Host "DOWNLOADING CODEQL WINDOWS BUNDLE"
       mkdir codeql
       cd codeql
-      wget "https://github.com/github/codeql-action/releases/download/codeql-bundle-20210421/codeql-bundle-win64.tar.gz" -outfile "codeql-bundle-win64.tar.gz"
+      wget https://github.com/github/codeql-action/releases/download/codeql-bundle-20210421/codeql-bundle-win64.tar.gz -outfile "codeql-bundle-win64.tar.gz"
       tar zxf .\codeql-bundle-win64.tar.gz codeql
 - task: PowerShell@2
   displayName: CodeQL Initialisation
